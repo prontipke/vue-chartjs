@@ -6,6 +6,7 @@
 
 <script>
 import { uuid } from 'vue-uuid'
+import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 
 // function set format number on lebel
@@ -38,7 +39,7 @@ export default {
     console.log()
     const ctx = document.getElementById(this.chartID)
 
-    new this.Chart(ctx, {
+    new Chart(ctx, {
       type: 'line',
       plugins: [ChartDataLabels],
       data: {
