@@ -12,6 +12,9 @@ export default {
   components: {
     lineChart,
   },
+  data() {
+    return {}
+  },
 }
 </script>
 
