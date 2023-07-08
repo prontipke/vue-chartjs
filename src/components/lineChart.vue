@@ -1,10 +1,12 @@
 <template>
-    <div class="layout-chart">
-        <div :style="`min-width:${minWidth}px;margin-bottom:${minWidth===''?'':10}px;`">
-            <canvas
-                :id="chartID"
-                :height="setHeightChart"
-            ></canvas>
+    <div>
+        <div style="width: 100%; overflow-x: auto">
+            <div :style="`min-width:${minWidth}px;margin-bottom:${minWidth === '' ? '' : 10}px;`">
+                <canvas
+                    :id="chartID"
+                    :height="setHeightChart"
+                ></canvas>
+            </div>
         </div>
     </div>
 </template>
@@ -211,8 +213,8 @@ export default {
             let datasets = setDatasets(this.datasets)
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
 
-            console.log('labels',this.labels);
-            console.log('datasets',datasets);
+            console.log('labels', this.labels)
+            console.log('datasets', datasets)
 
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
@@ -231,6 +233,7 @@ export default {
                     layout: {
                         padding: {
                             top: 30,
+                            right:30
                         },
                     },
                     plugins: {
@@ -336,9 +339,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.layout-chart {
-    width: 100%;
-    overflow-x: auto;
-}
-</style>
+<style scoped></style>

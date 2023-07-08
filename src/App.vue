@@ -9,6 +9,7 @@
                 :setHeightChart="setHeightChart"
                 :disableLegend="disableLegend"
                 positionDatalabels="top"
+                minWidth="300"
             />
         </div>
     </div>
