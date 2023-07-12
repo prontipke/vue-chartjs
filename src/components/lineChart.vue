@@ -212,10 +212,8 @@ export default {
         createChart() {
             let datasets = setDatasets(this.datasets)
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
-
-            console.log('labels', this.labels)
-            console.log('datasets', datasets)
-
+            // console.log('labels', this.labels)
+            // console.log('datasets', datasets)
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
                 type: 'line',
