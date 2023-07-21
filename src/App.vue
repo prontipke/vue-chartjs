@@ -11,24 +11,38 @@
                 positionDatalabels="top"
                 minWidth="300"
             />
+            <div style="height: 200px; background-color: red;">
+                <barChart
+                    :labels="labelsBarChart"
+                    :datasets="datasetsBarChart"
+                    :maintainAspectRatio="false"
+                    :setHeightChart="setHeightBarChart"
+                    :disableLegend="disableLegendBarChart"
+                    positionDatalabels="top"
+                    minWidth="600"
+                    axis="y"
+                />
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import lineChart from './components/lineChart.vue'
+import barChart from './components/barChart.vue'
 
 export default {
     name: 'App',
     components: {
-        lineChart
+        lineChart,
+        barChart,
     },
     data() {
         return {
             // line
             setHeightChart: '200',
             showDatalabels: true,
-            disableLegend:true,
+            disableLegend: true,
             labels: ['red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
             datasets: [
                 {
@@ -59,6 +73,19 @@ export default {
                     lineColor: 'red',
                     labelColor: 'blue',
                     labelColortext: 'red',
+                },
+            ],
+            // bar
+            setHeightBarChart: '00',
+            showDatalabelsBarChart: true,
+            disableLegendBarChart: true,
+            labelsBarChart: ['รพ.1', 'รพ.2', 'รพ.3', 'รพ.4', 'รพ.5', 'รพ.6'],
+            datasetsBarChart: [
+                {
+                    label: 'Votes',
+                    data: [7, 8, 9, 10, 11, 12],
+                    backgroundColor: ['#003eff', '#003eff', '#003eff', '#003eff', '#003eff', '#003eff'],
+                    labelColortext: '#1e1e1e', //default black
                 },
             ],
             // pie

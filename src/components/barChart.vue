@@ -39,8 +39,7 @@ function setDatasets(dataset) {
             label: e.label,
             data: e.data,
             borderWidth: e.lineWidth !== undefined ? e.lineWidth : 2,
-            borderColor: e.lineColor,
-            backgroundColor: e.labelColor,
+            backgroundColor: e.backgroundColor,
             labelColortext: e.labelColortext !== undefined ? e.labelColortext : '#000000',
         }
     })
@@ -102,7 +101,7 @@ export default {
         },
         setHeightChart: {
             type: String,
-            default: '500', // active when maintainAspectRatio = false
+            default: '', // active when maintainAspectRatio = false
         },
         responsive: {
             type: Boolean,
@@ -115,7 +114,7 @@ export default {
         aspectRatio: {
             type: Number,
             default: 2, //1=square when maintainAspectRatio true
-        },
+        },     
         // set title
         title: {
             // ข้อความ title
@@ -194,6 +193,17 @@ export default {
             type: Boolean,
             default: false,
         },
+        isLabelBackground: {
+            type: Boolean,
+            default: false,
+        // ใส่เมื่อต้องการสี true
+        },
+        // indexAxis
+        axis: {
+            type: String,
+            default: 'x',
+            // แท่ง bar --> x แนวตั้ง , y แนวนอน
+        },
         positionScalesX: {
             type: String,
             default: 'bottom',
@@ -220,9 +230,13 @@ export default {
         createChart() {
             let datasets = setDatasets(this.datasets)
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
+            let isLabelBackground = this.isLabelBackground
+
+
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
-                type: 'line',
+                type: 'bar',
+        
                 plugins: [ChartDataLabels],
                 data: {
                     labels: this.labels,
@@ -237,7 +251,7 @@ export default {
                     layout: {
                         padding: {
                             top: 30,
-                            right:30
+                            right:50
                         },
                     },
                     plugins: {
@@ -276,7 +290,8 @@ export default {
                                 return context.dataset.labelColortext
                             },
                             backgroundColor: function (context) {
-                                return context.dataset.backgroundColor
+                                if(isLabelBackground)return context.dataset.backgroundColor
+                                else return ''
                             },
                             formatter: function (data) {
                                 return formatNumber(data)
@@ -307,6 +322,7 @@ export default {
                     interaction: {
                         intersect: true,
                     },
+                    indexAxis: this.axis,
                     scales: {
                         x: {
                             position: this.positionScalesX ,
@@ -314,7 +330,7 @@ export default {
                             display: !this.disableLabelX,
                             grid: {
                                 display: true,
-                            },
+                            }, 
                             ticks: {
                                 font: { weight: 300, size: 14, family: this.font },
                             },
