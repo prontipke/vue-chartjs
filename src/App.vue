@@ -11,18 +11,16 @@
                 positionDatalabels="top"
                 minWidth="300"
             />
-            <div style="height: 200px; background-color: red;">
-                <barChart
-                    :labels="labelsBarChart"
-                    :datasets="datasetsBarChart"
-                    :maintainAspectRatio="false"
-                    :setHeightChart="setHeightBarChart"
-                    :disableLegend="disableLegendBarChart"
-                    positionDatalabels="top"
-                    minWidth="600"
-                    axis="y"
-                />
-            </div>
+            <barChart
+                :labels="labelsBarChart"
+                :datasets="datasetsBarChart"
+                :maintainAspectRatio="false"
+                :setHeightChart="setHeightBarChart"
+                :disableLegend="disableLegendBarChart"
+                positionDatalabels="top"
+                minWidth="600"
+                axis="y"
+            />
         </div>
     </div>
 </template>
