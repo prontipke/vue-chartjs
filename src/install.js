@@ -1,5 +1,5 @@
 import lineChart from './components/lineChart.vue'
-import barChart from './components/barChart.vue.vue'
+import barChart from './components/barChart.vue'
 const ComponentChart = {
   install(Vue) {
     Vue.component('mai-line-chartjs', lineChart)

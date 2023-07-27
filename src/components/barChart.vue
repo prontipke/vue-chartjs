@@ -114,7 +114,7 @@ export default {
         aspectRatio: {
             type: Number,
             default: 2, //1=square when maintainAspectRatio true
-        },     
+        },
         // set title
         title: {
             // ข้อความ title
@@ -196,7 +196,7 @@ export default {
         isLabelBackground: {
             type: Boolean,
             default: false,
-        // ใส่เมื่อต้องการสี true
+            // ใส่เมื่อต้องการสี true
         },
         // indexAxis
         axis: {
@@ -211,6 +211,10 @@ export default {
         positionScalesY: {
             type: String,
             default: 'left',
+        },
+        prependUnit: {
+            type: String,
+            default: '',
         },
     },
     data() {
@@ -231,12 +235,12 @@ export default {
             let datasets = setDatasets(this.datasets)
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
             let isLabelBackground = this.isLabelBackground
-
+            let prependUnit = this.prependUnit
 
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
                 type: 'bar',
-        
+
                 plugins: [ChartDataLabels],
                 data: {
                     labels: this.labels,
@@ -251,7 +255,7 @@ export default {
                     layout: {
                         padding: {
                             top: 30,
-                            right:50
+                            right: 60,
                         },
                     },
                     plugins: {
@@ -290,11 +294,11 @@ export default {
                                 return context.dataset.labelColortext
                             },
                             backgroundColor: function (context) {
-                                if(isLabelBackground)return context.dataset.backgroundColor
+                                if (isLabelBackground) return context.dataset.backgroundColor
                                 else return ''
                             },
                             formatter: function (data) {
-                                return formatNumber(data)
+                                return formatNumber(data) + prependUnit
                             },
                             align: setPositionLabels.align,
                             anchor: setPositionLabels.anchor,
@@ -313,7 +317,8 @@ export default {
                                     if (label) {
                                         label += ':'
                                     }
-                                    label += context.formattedValue.toLocaleString('en-US')
+                                    label = label + context.formattedValue.toLocaleString('en-US') + prependUnit
+                                    return label
                                 },
                             },
                         },
@@ -325,14 +330,18 @@ export default {
                     indexAxis: this.axis,
                     scales: {
                         x: {
-                            position: this.positionScalesX ,
+                            position: this.positionScalesX,
                             stacked: false, // ตัวที่ทำให้เป็น Stack
                             display: !this.disableLabelX,
                             grid: {
                                 display: true,
-                            }, 
+                            },
                             ticks: {
                                 font: { weight: 300, size: 14, family: this.font },
+                                callback: function (label) {
+                                    let data = formatNumber(label) + prependUnit
+                                    return data
+                                },
                             },
                         },
                         y: {

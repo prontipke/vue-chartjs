@@ -299,6 +299,7 @@ export default {
                                         label += ':'
                                     }
                                     label += context.formattedValue.toLocaleString('en-US')
+                                    return label
                                 },
                             },
                         },

@@ -81,7 +81,7 @@ export default {
             datasetsBarChart: [
                 {
                     label: 'Votes',
-                    data: [7, 8, 9, 10, 11, 12],
+                    data: [700, 800, 900, 100, 110, 120],
                     backgroundColor: ['#003eff', '#003eff', '#003eff', '#003eff', '#003eff', '#003eff'],
                     labelColortext: '#1e1e1e', //default black
                 },
