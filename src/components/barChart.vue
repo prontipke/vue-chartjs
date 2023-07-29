@@ -216,6 +216,10 @@ export default {
             type: String,
             default: '',
         },
+        precision:{
+            type: Number,
+            default: 2,
+        }
     },
     data() {
         return {
@@ -236,6 +240,7 @@ export default {
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
             let isLabelBackground = this.isLabelBackground
             let prependUnit = this.prependUnit
+            const self = this 
 
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
@@ -298,7 +303,7 @@ export default {
                                 else return ''
                             },
                             formatter: function (data) {
-                                return formatNumber(data) + prependUnit
+                                return formatNumber(data,self.precision) + prependUnit
                             },
                             align: setPositionLabels.align,
                             anchor: setPositionLabels.anchor,
@@ -339,7 +344,7 @@ export default {
                             ticks: {
                                 font: { weight: 300, size: 14, family: this.font },
                                 callback: function (label) {
-                                    let data = formatNumber(label) + prependUnit
+                                    let data = formatNumber(label,self.precision) + prependUnit
                                     return data
                                 },
                             },

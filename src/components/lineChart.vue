@@ -202,6 +202,10 @@ export default {
             type: String,
             default: 'left',
         },
+        precision:{
+            type: Number,
+            default: 2,
+        }
     },
     data() {
         return {
@@ -220,6 +224,7 @@ export default {
         createChart() {
             let datasets = setDatasets(this.datasets)
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
+            const self = this 
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
                 type: 'line',
@@ -279,7 +284,7 @@ export default {
                                 return context.dataset.backgroundColor
                             },
                             formatter: function (data) {
-                                return formatNumber(data)
+                                return formatNumber(data,self.precision)
                             },
                             align: setPositionLabels.align,
                             anchor: setPositionLabels.anchor,
