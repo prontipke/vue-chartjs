@@ -27,7 +27,13 @@ function formatNumber(num, precision = 1) {
     ]
     const found = map.find((x) => Math.abs(num) >= x.threshold)
     if (found) {
-        const formatted = (num / found.threshold).toFixed(precision) + found.suffix
+        let formatted = 0
+        if (precision == 0 && found.threshold != 1) {
+            formatted = (num / found.threshold).toFixed(1) + found.suffix
+        } else {
+            formatted = (num / found.threshold).toFixed(precision) + found.suffix
+        }
+
         return formatted
     }
     return num
@@ -202,10 +208,10 @@ export default {
             type: String,
             default: 'left',
         },
-        precision:{
+        precision: {
             type: Number,
             default: 2,
-        }
+        },
     },
     data() {
         return {
@@ -224,7 +230,7 @@ export default {
         createChart() {
             let datasets = setDatasets(this.datasets)
             let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
-            const self = this 
+            const self = this
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
                 type: 'line',
@@ -242,7 +248,7 @@ export default {
                     layout: {
                         padding: {
                             top: 30,
-                            right:30
+                            right: 30,
                         },
                     },
                     plugins: {
@@ -284,7 +290,7 @@ export default {
                                 return context.dataset.backgroundColor
                             },
                             formatter: function (data) {
-                                return formatNumber(data,self.precision)
+                                return formatNumber(data, self.precision)
                             },
                             align: setPositionLabels.align,
                             anchor: setPositionLabels.anchor,
@@ -315,7 +321,7 @@ export default {
                     },
                     scales: {
                         x: {
-                            position: this.positionScalesX ,
+                            position: this.positionScalesX,
                             stacked: false, // ตัวที่ทำให้เป็น Stack
                             display: !this.disableLabelX,
                             grid: {

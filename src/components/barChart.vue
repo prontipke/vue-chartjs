@@ -27,7 +27,12 @@ function formatNumber(num, precision = 1) {
     ]
     const found = map.find((x) => Math.abs(num) >= x.threshold)
     if (found) {
-        const formatted = (num / found.threshold).toFixed(precision) + found.suffix
+        let formatted = 0
+        if (precision == 0 && found.threshold != 1) {
+            formatted = (num / found.threshold).toFixed(1) + found.suffix
+        }else{
+            formatted = (num / found.threshold).toFixed(precision) + found.suffix
+        }
         return formatted
     }
     return num
