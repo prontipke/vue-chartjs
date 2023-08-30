@@ -28,9 +28,9 @@ function formatNumber(num, precision = 1) {
     const found = map.find((x) => Math.abs(num) >= x.threshold)
     if (found) {
         let formatted = 0
-        if (precision == 0 && found.threshold != 1) {
+        if (precision === 0 && found.threshold !== 1) {
             formatted = (num / found.threshold).toFixed(1) + found.suffix
-        }else{
+        } else {
             formatted = (num / found.threshold).toFixed(precision) + found.suffix
         }
         return formatted
@@ -39,7 +39,7 @@ function formatNumber(num, precision = 1) {
 }
 
 function setDatasets(dataset) {
-    let mapDataset = dataset.map((e) => {
+    const mapDataset = dataset.map((e) => {
         return {
             label: e.label,
             data: e.data,
@@ -118,13 +118,13 @@ export default {
         },
         aspectRatio: {
             type: Number,
-            default: 2, //1=square when maintainAspectRatio true
+            default: 2, // 1=square when maintainAspectRatio true
         },
         // set title
         title: {
             // ข้อความ title
             type: String,
-            default: '', //if unset display = false
+            default: '', // if unset display = false
         },
         titlePosition: {
             // ใช้ในการกำหนดตำแหนงของ title
@@ -139,7 +139,7 @@ export default {
         subtitle: {
             // ข้อความ subtitle
             type: String,
-            default: '', //if unset display = false
+            default: '', // if unset display = false
         },
         subtitlePosition: {
             // ใช้ในการกำหนดตำแหนงของ subtitle
@@ -166,7 +166,7 @@ export default {
         },
         legendTitle: {
             type: String,
-            default: '', //if unset display = false
+            default: '', // if unset display = false
         },
         // set Datalabels
         disableDatalabels: {
@@ -175,7 +175,7 @@ export default {
         },
         positionDatalabels: {
             type: String,
-            default: 'top', //center,top,bottom,left,right
+            default: 'top', // center,top,bottom,left,right
         },
         // set show Label Y and X
         disableLabelY: {
@@ -221,14 +221,48 @@ export default {
             type: String,
             default: '',
         },
-        precision:{
+        precision: {
             type: Number,
             default: 2,
-        }
+        },
+        stacked: {
+            type: Boolean,
+            default: false,
+        },
+        datalabelsPercent: {
+            type: Boolean,
+            default: false,
+        },
+        titleScalesX: {
+            type: String,
+            default: '',
+        },
+        titleScalesY: {
+            type: String,
+            default: '',
+        },
+        //custom show tooltip
+        customTooltip: {
+            type: Boolean,
+            default: false,
+        },
+        dataCustomTooltip: {
+            type: Object,
+            default: () => {},
+        },
+        customDatalabels: {
+            type: Boolean,
+            default: false,
+        },
+        dataCustomDatalabels: {
+            type: Object,
+            default: () => {},
+        },
     },
     data() {
         return {
             chart: null,
+            sumStacked: [],
         }
     },
     watch: {
@@ -240,12 +274,34 @@ export default {
         this.createChart()
     },
     methods: {
+        sumAll() {
+            let sumStacked = []
+            if (this.stacked && this.datalabelsPercent) {
+                sumStacked = this.datasets.length !== 0 ? Array(this.datasets[0].data.length).fill(0) : []
+                for (let index = 0; index < this.datasets.length; index++) {
+                    for (let index2 = 0; index2 < this.datasets[index].data.length; index2++) {
+                        sumStacked[index2] = sumStacked[index2] + this.datasets[index].data[index2]
+                    }
+                }
+                this.sumStacked = sumStacked
+            } else if (!this.stacked && this.datalabelsPercent) {
+                sumStacked = Array(this.datasets.length).fill(0)
+                for (let index = 0; index < this.datasets.length; index++) {
+                    for (let index2 = 0; index2 < this.datasets[index].data.length; index2++) {
+                        sumStacked[index] = sumStacked[index] + this.datasets[index].data[index2]
+                    }
+                }
+                this.sumStacked = sumStacked
+            }
+        },
         createChart() {
-            let datasets = setDatasets(this.datasets)
-            let setPositionLabels = setPositionDatalabels(this.positionDatalabels)
-            let isLabelBackground = this.isLabelBackground
-            let prependUnit = this.prependUnit
-            const self = this 
+            const datasets = setDatasets(this.datasets)
+            const setPositionLabels = setPositionDatalabels(this.positionDatalabels)
+            const isLabelBackground = this.isLabelBackground
+            const prependUnit = this.prependUnit
+            this.sumAll()
+
+            const self = this
 
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
@@ -270,7 +326,7 @@ export default {
                     },
                     plugins: {
                         title: {
-                            display: this.title === '' ? false : true,
+                            display: this.title !== '',
                             text: this.title,
                             position: this.titlePosition,
                             align: this.titleAlign,
@@ -278,7 +334,7 @@ export default {
                             font: { weight: 300, size: 16, family: this.font },
                         },
                         subtitle: {
-                            display: this.subtitle === '' ? false : true,
+                            display: this.subtitle !== '',
                             text: this.subtitle,
                             position: this.subtitlePosition,
                             align: this.subtitleAlign,
@@ -292,14 +348,14 @@ export default {
                             labels: { font: { weight: 300, size: 16, family: this.font } },
                             title: {
                                 // #  Title ของตราง legend
-                                display: this.legendTitle === '' ? false : true,
+                                display: this.legendTitle !== '',
                                 text: this.legendTitle,
                                 padding: 5,
                                 labels: { font: { weight: 300, size: 14, family: this.font } },
                             },
                         },
                         datalabels: {
-                            display: !this.disableDatalabels, //set show
+                            display: !this.disableDatalabels, // set show
                             color: function (context) {
                                 return context.dataset.labelColortext
                             },
@@ -307,8 +363,46 @@ export default {
                                 if (isLabelBackground) return context.dataset.backgroundColor
                                 else return ''
                             },
-                            formatter: function (data) {
-                                return formatNumber(data,self.precision) + prependUnit
+                            formatter: function (data, dataSet) {
+                                if (self.customDatalabels) {
+                                    let listDatalabels = []
+                                    if (self.datasets.length === 1) {
+                                        const dataDatalabels = self.dataCustomDatalabels.data.find(
+                                            (element) => element.label === self.labels[dataSet.dataIndex]
+                                        )
+                                        for (let index = 0; index < self.dataCustomDatalabels.index.length; index++) {
+                                            const text =
+                                                self.dataCustomDatalabels.index[index].text +
+                                                    dataDatalabels[self.dataCustomDatalabels.index[index].index].toLocaleString('en-US') +
+                                                    ' ' +
+                                                    self.dataCustomDatalabels.index[index].unit || ''
+                                            listDatalabels.push(text)
+                                        }
+                                    }
+                                    if (self.datasets.length > 1) {
+                                        const Datalabels = self.dataCustomDatalabels.data.find((element) => element.label === dataSet.dataset.label)
+                                        const dataDatalabels = Datalabels.data.find((element) => element.label === self.labels[dataSet.dataIndex])
+                                        for (let index = 0; index < self.dataCustomDatalabels.index.length; index++) {
+                                            const text =
+                                                self.dataCustomDatalabels.index[index].text +
+                                                    dataDatalabels[self.dataCustomDatalabels.index[index].index].toLocaleString('en-US') +
+                                                    ' ' +
+                                                    self.dataCustomDatalabels.index[index].unit || ''
+                                            listDatalabels.push(text)
+                                        }
+                                    }
+
+                                    return listDatalabels
+                                } else {
+                                    const cal = (data * 100) / self.sumStacked[dataSet.datasetIndex]
+                                    if (self.stacked && self.datalabelsPercent) {
+                                        return formatNumber(isNaN(cal) ? 0 : cal) + ' %'
+                                    } else if (!self.stacked && self.datalabelsPercent) {
+                                        return formatNumber(isNaN(cal) ? 0 : cal) + ' %'
+                                    } else {
+                                        return formatNumber(data, self.precision) + prependUnit
+                                    }
+                                }
                             },
                             align: setPositionLabels.align,
                             anchor: setPositionLabels.anchor,
@@ -317,18 +411,48 @@ export default {
                             padding: 3,
                         },
                         tooltip: {
-                            enabled: !this.disableTooltip, //set show,
+                            enabled: !this.disableTooltip, // set show,
                             titleFont: { weight: 300, size: 14, family: this.font },
                             bodyFont: { weight: 300, size: 14, family: this.font },
                             footerFont: { weight: 300, size: 14, family: this.font },
                             callbacks: {
                                 label: (context) => {
-                                    let label = context.dataset.label || ''
-                                    if (label) {
-                                        label += ':'
+                                    if (self.customTooltip) {
+                                        const listTooltip = [context.dataset.label]
+                                        if (self.datasets.length === 1) {
+                                            const dataDataTooltip = self.dataCustomTooltip.data.find((element) => element.label === context.label)
+                                            for (let index = 0; index < self.dataCustomTooltip.index.length; index++) {
+                                                const text =
+                                                    self.dataCustomTooltip.index[index].text +
+                                                        ' : ' +
+                                                        dataDataTooltip[self.dataCustomTooltip.index[index].index].toLocaleString('en-US') +
+                                                        ' ' +
+                                                        self.dataCustomTooltip.index[index].unit || ''
+                                                listTooltip.push(text)
+                                            }
+                                        }
+                                        if (self.datasets.length > 1) {
+                                            const DataTooltip = self.dataCustomTooltip.data.find((element) => element.label === context.dataset.label)
+                                            const dataDataTooltip = DataTooltip.data.find((element) => element.label === context.label)
+                                            for (let index = 0; index < self.dataCustomTooltip.index.length; index++) {
+                                                const text =
+                                                    self.dataCustomTooltip.index[index].text +
+                                                        ' : ' +
+                                                        dataDataTooltip[self.dataCustomTooltip.index[index].index].toLocaleString('en-US') +
+                                                        ' ' +
+                                                        self.dataCustomTooltip.index[index].unit || ''
+                                                listTooltip.push(text)
+                                            }
+                                        }
+                                        return listTooltip
+                                    } else {
+                                        let label = context.dataset.label || ''
+                                        if (label) {
+                                            label += ':'
+                                        }
+                                        label = label + context.formattedValue.toLocaleString('en-US') + prependUnit
+                                        return label
                                     }
-                                    label = label + context.formattedValue.toLocaleString('en-US') + prependUnit
-                                    return label
                                 },
                             },
                         },
@@ -341,15 +465,25 @@ export default {
                     scales: {
                         x: {
                             position: this.positionScalesX,
-                            stacked: false, // ตัวที่ทำให้เป็น Stack
+                            stacked: this.stacked, // ตัวที่ทำให้เป็น Stack
                             display: !this.disableLabelX,
                             grid: {
                                 display: true,
                             },
+                            title: {
+                                display: this.titleScalesX !== '',
+                                text: this.titleScalesX,
+                                font: { weight: 300, size: 14, family: this.font },
+                            },
                             ticks: {
                                 font: { weight: 300, size: 14, family: this.font },
                                 callback: function (label) {
-                                    let data = formatNumber(label,self.precision) + prependUnit
+                                    let data = label
+                                    if (self.axis === 'y') {
+                                        data = formatNumber(label, 0) + prependUnit
+                                    } else if (self.axis === 'x') {
+                                        data = self.labels[label]
+                                    }
                                     return data
                                 },
                             },
@@ -357,13 +491,27 @@ export default {
                         y: {
                             position: this.positionScalesY,
                             beginAtZero: true,
-                            stacked: false, // ตัวที่ทำให้เป็น Stack
+                            stacked: this.stacked, // ตัวที่ทำให้เป็น Stack
                             display: !this.disableLabelY,
                             grid: {
                                 display: true,
                             },
+                            title: {
+                                display: this.titleScalesY !== '',
+                                text: this.titleScalesY,
+                                font: { weight: 300, size: 14, family: this.font },
+                            },
                             ticks: {
                                 font: { weight: 300, size: 14, family: this.font },
+                                callback: function (label) {
+                                    let data = label
+                                    if (self.axis === 'x') {
+                                        data = formatNumber(label, 0) + prependUnit
+                                    } else if (self.axis === 'y') {
+                                        data = self.labels[label]
+                                    }
+                                    return data
+                                },
                             },
                         },
                     },
@@ -371,7 +519,7 @@ export default {
             })
         },
         async update() {
-            let datasets = await setDatasets(this.datasets)
+            const datasets = await setDatasets(this.datasets)
             this.chart.data.labels = this.labels
             this.chart.data.datasets = datasets
             await this.chart.update()
