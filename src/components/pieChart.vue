@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div style="width: 100%; overflow-x: auto">
+        <div style="width: 100%; overflow-x: auto background-color:red;">
             <div :style="`min-width:${minWidth}px;margin-bottom:${minWidth === '' ? '' : 10}px;`">
                 <canvas
                     :id="chartID"
@@ -112,14 +112,6 @@ export default {
             type: Boolean,
             default: true,
         },
-        maintainAspectRatio: {
-            type: Boolean,
-            default: true,
-        },
-        aspectRatio: {
-            type: Number,
-            default: 2, // 1=square when maintainAspectRatio true
-        },
         // set title
         title: {
             // ข้อความ title
@@ -177,18 +169,6 @@ export default {
             type: String,
             default: 'top', // center,top,bottom,left,right
         },
-        // set show Label Y and X
-        disableLabelY: {
-            // จะ disable label แกน y
-            type: Boolean,
-            default: false,
-        },
-        disableLabelX: {
-            // จะ disable label แกน X
-            type: Boolean,
-            default: false,
-        },
-        // set font all
         font: {
             type: String,
             default: 'Prompt',
@@ -202,20 +182,6 @@ export default {
             type: Boolean,
             default: false,
             // ใส่เมื่อต้องการสี true
-        },
-        // indexAxis
-        axis: {
-            type: String,
-            default: 'x',
-            // แท่ง bar --> x แนวตั้ง , y แนวนอน
-        },
-        positionScalesX: {
-            type: String,
-            default: 'bottom',
-        },
-        positionScalesY: {
-            type: String,
-            default: 'left',
         },
         prependUnit: {
             type: String,
@@ -232,14 +198,6 @@ export default {
         datalabelsPercent: {
             type: Boolean,
             default: false,
-        },
-        titleScalesX: {
-            type: String,
-            default: '',
-        },
-        titleScalesY: {
-            type: String,
-            default: '',
         },
         //custom show tooltip
         customTooltip: {
@@ -305,7 +263,7 @@ export default {
 
             const ctx = document.getElementById(this.chartID)
             this.chart = new Chartjs(ctx.getContext('2d'), {
-                type: 'bar',
+                type: 'pie',
 
                 plugins: [ChartDataLabels],
                 data: {
@@ -314,16 +272,8 @@ export default {
                 },
                 options: {
                     responsive: this.responsive, // # ปรับขนาดแบบ Responsesive
-                    maintainAspectRatio: this.maintainAspectRatio,
-                    aspectRatio: this.aspectRatio, // # อัตราส่วน heigth : "aspectRatio"
                     resizeDelay: 1, // # ใช้กำหนดเวลาเมื่อ Chart Resize (ms)
                     locale: 'th',
-                    layout: {
-                        padding: {
-                            top: 30,
-                            right: 60,
-                        },
-                    },
                     plugins: {
                         title: {
                             display: this.title !== '',
@@ -459,60 +409,6 @@ export default {
                     animation: true,
                     interaction: {
                         intersect: true,
-                    },
-                    indexAxis: this.axis,
-                    scales: {
-                        x: {
-                            position: this.positionScalesX,
-                            stacked: this.stacked, // ตัวที่ทำให้เป็น Stack
-                            display: !this.disableLabelX,
-                            grid: {
-                                display: true,
-                            },
-                            title: {
-                                display: this.titleScalesX !== '',
-                                text: this.titleScalesX,
-                                font: { weight: 300, size: 14, family: this.font },
-                            },
-                            ticks: {
-                                font: { weight: 300, size: 14, family: this.font },
-                                callback: function (label) {
-                                    let data = label
-                                    if (self.axis === 'y') {
-                                        data = formatNumber(label, 0) + prependUnit
-                                    } else if (self.axis === 'x') {
-                                        data = self.labels[label]
-                                    }
-                                    return data
-                                },
-                            },
-                        },
-                        y: {
-                            position: this.positionScalesY,
-                            beginAtZero: true,
-                            stacked: this.stacked, // ตัวที่ทำให้เป็น Stack
-                            display: !this.disableLabelY,
-                            grid: {
-                                display: true,
-                            },
-                            title: {
-                                display: this.titleScalesY !== '',
-                                text: this.titleScalesY,
-                                font: { weight: 300, size: 14, family: this.font },
-                            },
-                            ticks: {
-                                font: { weight: 300, size: 14, family: this.font },
-                                callback: function (label) {
-                                    let data = label
-                                    if (self.axis === 'x') {
-                                        data = formatNumber(label, 0) + prependUnit
-                                    } else if (self.axis === 'y') {
-                                        data = self.labels[label]
-                                    }
-                                    return data
-                                },
-                            },
-                        },
                     },
                 },
             })
